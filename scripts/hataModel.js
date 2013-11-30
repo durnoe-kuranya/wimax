@@ -5,12 +5,16 @@
 		return Math.log(val) / Math.LN10;
 	}
 
-	function extend() {
-		for (var i = 1; i < arguments.length; i++)
-			for (var key in arguments[i])
-				if (arguments[i].hasOwnProperty(key))
-					arguments[0][key] = arguments[i][key];
-		return arguments[0];
+	function extend(descendant, parent) {
+		var key;
+
+		for (key in parent) {
+			if (parent.hasOwnProperty(key)) {
+				descendant[key] = parent[key];
+			}
+		}
+
+		return descendant;
 	}
 
 	function HataModel(options) {
@@ -25,7 +29,7 @@
 				U: 1,
 				//Terrain type. 1 (city), 0.5 (nature) or 0 (village)
 				uGamma: 1,
-				//Housing density [3,50] %
+				//Housing density [3,50]%
 				b: 50,
 				//Starting power
 				p: 32,
@@ -135,9 +139,9 @@
 			var signal = opts.p - self.getSignalLoss(r) - opts.s;
 
 			return signal;
-		}
+		};
 
-		this.getRadius = function (minimalSignal) {
+		this.getRadius = function () {
 			var signal, r = 1;
 
 			signal = self.getSignalPower(r);
@@ -149,7 +153,7 @@
 			}
 
 			return r;
-		}
+		};
 	}
 
 	(function exports() {
@@ -159,5 +163,6 @@
 	}());
 
 }((function () {
+		'use strict';
 		return this;
 	}())));
