@@ -1,0 +1,14 @@
+.plot {
+	width: 90%;
+	margin: 30px auto;
+	height: 400px;
+}
+
+.plot-wrapper {
+	display: none;
+}
+
+.options {
+	width: 90%;
+	margin: 0 auto;
+}

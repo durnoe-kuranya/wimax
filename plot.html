@@ -2,95 +2,20 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<title>WiMax coverage calculator</title>
-	<script type="text/javascript" src="lib/js/jquery-1.10.2.min.js"></script>
-	<script type="text/javascript" src="lib/js/jquery.flot.js"></script>
-	<script type="text/javascript" src="scripts/hataModel.js"></script>
+	<title>WiMax plotter</title>
+
 	<link rel="stylesheet" href="lib/css/bootstrap.min.css"/>
-
-	<style>
-		.plot {
-			width: 90%;
-			margin: 30px auto;
-			height: 400px;
-		}
-
-		.plot-wrapper {
-			display: none;
-		}
-
-		.options {
-			width: 90%;
-			margin: 0 auto;
-		}
-	</style>
-
-	<script>
-		function getOptions() {
-			var options = {
-				hBs: parseFloat($('#hBs').val()),
-				hAs: parseFloat($('#hAs').val()),
-				f: parseFloat($('#f').val()),
-				U: parseFloat($('#terrain-type').val()),
-				uGamma: parseFloat($('#house-density').val()),
-				b: parseFloat($('#house-density').val()),
-				p: parseFloat($('#base-power').val()),
-				s: parseFloat($('#margin-fade').val()),
-				q: parseFloat($('#required-signal').val())
-			};
-
-//TODO: remove it. this is just a stab implementation
-			options = {};
-
-			return options;
-		}
-	</script>
-
-	<script>
-
-		$(function () {
-			$('#plot-button').click(function (event) {
-				var options = getOptions();
-
-				var hm = new WM.HataModel(options);
-
-				(function plot() {
-					var r = 1;
-					var i = 0;
-					var fadingPlotPoints = [];
-					var signalPlotPoints = [];
-
-					for (i = 0; i < 100; i += 1) {
-						var fading = hm.getSignalLoss(r);
-						var signal = hm.getSignalPower(r)
-
-						fadingPlotPoints.push([r, fading]);
-						signalPlotPoints.push([r, signal]);
-
-						r += 100;
-					}
-
-					$('.plot-wrapper').show();
-
-					$.plot("#fading-plot", [fadingPlotPoints], { colors: ["red"]});
-					$.plot("#signal-plot", [signalPlotPoints], { colors: ["blue"]});
-				}());
-
-				event.preventDefault();
-			});
-		});
-	</script>
-
+	<link rel="stylesheet" href="styles/plot.css"/>
 </head>
 <body>
 <h2>Параметры</h2>
 
 <form class="form-horizontal options" role="form">
 	<div class="form-group">
-		<label for="hBs" class="col-sm-2 control-label">Высота принимающей станции</label>
+		<label for="hBs" class="col-sm-2 control-label">Высота передающей станции</label>
 
 		<div class="col-sm-10">
-			<input type="text" class="form-control" id="hBs" placeholder="Высота принимающей станции" value="32"/>
+			<input type="text" class="form-control" id="hBs" placeholder="Высота передающей станции" value="32"/>
 		</div>
 	</div>
 
@@ -158,23 +83,22 @@
 
 	<div class="form-group">
 		<div class="col-sm-offset-2 col-sm-10">
-			<button type="submit" id="plot-button" class="btn btn-default">Sign in</button>
+			<button type="submit" id="plot-button" class="btn btn-default">Рассчитать</button>
 		</div>
 	</div>
 
 </form>
 
 <div class="plot-wrapper">
-	<h2>Затухание сигнала</h2>
-
-	<div class="plot" id="fading-plot"></div>
-</div>
-
-<div class="plot-wrapper">
 	<h2>Мощность сигнала</h2>
 
 	<div class="plot" id="signal-plot"></div>
 </div>
+
+<script type="text/javascript" src="lib/js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="lib/js/jquery.flot.js"></script>
+<script type="text/javascript" src="scripts/hataModel.js"></script>
+<script type="text/javascript" src="scripts/plot.js"></script>
 
 </body>
 </html>

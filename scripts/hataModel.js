@@ -162,7 +162,4 @@
 		};
 	}());
 
-}((function () {
-		'use strict';
-		return this;
-	}())));
+}(this));
