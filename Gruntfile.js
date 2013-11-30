@@ -1,4 +1,4 @@
-(function() {
+(function () {
 	'use strict';
 
 	module.exports = function (grunt) {
@@ -17,6 +17,12 @@
 					}
 				}
 			},
+			jasmine: {
+				all: {
+					src: ['specs/**.js'],
+					errorReporting: true
+				}
+			},
 			watch: {
 				files: ['scripts/**.js', '*.js'],
 				tasks: ['jslint']
@@ -24,6 +30,7 @@
 		});
 
 		grunt.loadNpmTasks('grunt-jslint');
+		grunt.loadNpmTasks('grunt-jasmine-task');
 		grunt.loadNpmTasks('grunt-contrib-watch');
 
 		grunt.registerTask('default', ['watch']);
