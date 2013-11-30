@@ -20,23 +20,23 @@
 	function HataModel(options) {
 		var defaults = {
 				//Base station height [100, 300] meters
-				hBs: 32,
+				hBs: 20,
 				//Consumer station height [1,3] meters
-				hAs: 1.7,
+				hAs: 4,
 				//Frequency [100; 3*1000] MHz
 				f: 2500,
-				//City type coefficient 1 (big city) or 0 (small or medium town)
-				U: 1,
+				//City type coefficient 1 (big city), 0 (small or medium town)
+				U: 0,
 				//Terrain type. 1 (city), 0.5 (nature) or 0 (village)
-				uGamma: 1,
+				uGamma: 0,
 				//Housing density [3,50]%
-				b: 50,
+				b: 0.2,
 				//Starting power
-				p: 32,
+				p: 100,
 				//Margin fade
-				s: 40,
+				s: 30,
 				//Required signal
-				q: -103
+				q: -153
 			},
 			opts = extend(defaults, options),
 			self = this;
@@ -147,9 +147,9 @@
 			signal = self.getSignalPower(r);
 
 			//self.q - minimal required signal
-			while (signal > self.q) {
+			while (signal > opts.q) {
 				r += 10;
-				signal = self.getSignalLoss(r);
+				signal = self.getSignalPower(r);
 			}
 
 			return r;

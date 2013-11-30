@@ -15,7 +15,7 @@
 		<label for="hBs" class="col-sm-2 control-label">Высота передающей станции</label>
 
 		<div class="col-sm-10">
-			<input type="text" class="form-control" id="hBs" placeholder="Высота передающей станции" value="32"/>
+			<input type="text" class="form-control" id="hBs" placeholder="Высота передающей станции" value="20"/>
 		</div>
 	</div>
 
@@ -23,7 +23,7 @@
 		<label for="hAs" class="col-sm-2 control-label">Высота принимающей станции</label>
 
 		<div class="col-sm-10">
-			<input type="text" class="form-control" id="hAs" placeholder="Высота принимающей станции" value="1.7"/>
+			<input type="text" class="form-control" id="hAs" placeholder="Высота принимающей станции" value="4"/>
 		</div>
 	</div>
 
@@ -36,13 +36,24 @@
 	</div>
 
 	<div class="form-group">
+		<label for="city-size" class="col-sm-2 control-label">Размер города</label>
+
+		<div class="col-sm-10">
+			<select class="form-control" id="city-size" value="0">
+				<option value="0">Малый</option>
+				<option value="1">Большой или средний</option>
+			</select>
+		</div>
+	</div>
+
+	<div class="form-group">
 		<label for="terrain-type" class="col-sm-2 control-label">Тип местности</label>
 
 		<div class="col-sm-10">
-			<select class="form-control" id="terrain-type">
-				<option value="1">Большой город</option>
-				<option value="0.5">Малый город</option>
-				<option value="0">Деревня</option>
+			<select class="form-control" id="terrain-type" value="0">
+				<option value="0">Сельская местность</option>
+				<option value="0.5">Пригород</option>
+				<option value="1">Город</option>
 			</select>
 		</div>
 	</div>
@@ -52,7 +63,7 @@
 
 		<div class="col-sm-10">
 			<input type="range" min="0" max="1" step="0.01" class="form-control" id="house-density"
-				   placeholder="Процент застройки" value="0.3"/>
+				   placeholder="Процент застройки" value="0.1"/>
 		</div>
 	</div>
 
@@ -60,7 +71,7 @@
 		<label for="base-power" class="col-sm-2 control-label">Выходная мощность</label>
 
 		<div class="col-sm-10">
-			<input type="text" class="form-control" id="base-power" placeholder="Выходная мощность" value="32"/>
+			<input type="text" class="form-control" id="base-power" placeholder="Выходная мощность" value="100"/>
 		</div>
 	</div>
 
@@ -68,7 +79,7 @@
 		<label for="margin-fade" class="col-sm-2 control-label">Запас по замираниям</label>
 
 		<div class="col-sm-10">
-			<input type="text" class="form-control" id="margin-fade" placeholder="Запас по замираниям" value="40"/>
+			<input type="text" class="form-control" id="margin-fade" placeholder="Запас по замираниям" value="30"/>
 		</div>
 	</div>
 
@@ -77,7 +88,7 @@
 
 		<div class="col-sm-10">
 			<input type="text" class="form-control" id="required-signal"
-				   placeholder="Требуемый уровень сигнала на входе приемника" value="-103"/>
+				   placeholder="Требуемый уровень сигнала на входе приемника" value="-153"/>
 		</div>
 	</div>
 
