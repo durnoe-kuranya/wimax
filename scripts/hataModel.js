@@ -1,15 +1,16 @@
-/**
- * Created with JetBrains WebStorm.
- * User: Neurosis
- * Date: 02.11.13
- * Time: 10:49
- * To change this template use File | Settings | File Templates.
- */
-(function (window, $) {
+(function (global) {
 	'use strict';
 
 	function log10(val) {
 		return Math.log(val) / Math.LN10;
+	}
+
+	function extend() {
+		for (var i = 1; i < arguments.length; i++)
+			for (var key in arguments[i])
+				if (arguments[i].hasOwnProperty(key))
+					arguments[0][key] = arguments[i][key];
+		return arguments[0];
 	}
 
 	function HataModel(options) {
@@ -18,16 +19,23 @@
 				hBs: 32,
 				//Consumer station height [1,3] meters
 				hAs: 1.7,
-				//Frequency [100*1000*1000; 3*1000*1000*1000] Hz
-				f: 2500 * 1000 * 1000,
+				//Frequency [100; 3*1000] MHz
+				f: 2500,
 				//City type coefficient 1 (big city) or 0 (small or medium town)
 				U: 1,
 				//Terrain type. 1 (city), 0.5 (nature) or 0 (village)
 				uGamma: 1,
 				//Housing density [3,50] %
-				b: 35
+				b: 50,
+				//Starting power
+				p: 32,
+				//Margin fade
+				s: 40,
+				//Required signal
+				q: -103
 			},
-			opts = $.extend(defaults, options);
+			opts = extend(defaults, options),
+			self = this;
 
 		this.betta1 = (function getBetta1() {
 			return (0.7 - 1.1 * log10(opts.f)) * opts.hAs
@@ -47,15 +55,15 @@
 		}());
 
 		this.f1 = (function getF1() {
-			var three100up4 = Math.pow(4, 300);
+			var three100up4 = Math.pow(300, 4);
 
 			return three100up4
-				/ (Math.pow(4, opts.f) + three100up4);
+				/ (Math.pow(opts.f, 4) + three100up4);
 		}());
 
 		this.f2 = (function getF2() {
-			var fUp4 = Math.pow(4, opts.f),
-				three100up4 = Math.pow(4, 300);
+			var fUp4 = Math.pow(opts.f, 4),
+				three100up4 = Math.pow(300, 4);
 
 			return fUp4
 				/ (fUp4 + three100up4);
@@ -64,29 +72,29 @@
 		//The coefficient that depends on base station's
 		//height and city's size.
 		this.alphaHAs = (function getAlphaHAs() {
-			return (1 - this.options.U) * this.getBetta1
-				+ (this.betta1 * this.f1 + this.betta3 * this.f2) * opts.U;
+			return (1 - opts.U) * self.betta1
+				+ (self.betta2 * self.f1 + self.betta3 * self.f2) * opts.U;
 		}());
 
 		this.gamma1 = (function getGamma1() {
 			var lg = log10(opts.f);
 
-			return 4.78 * lg * lg
-				- 18.33 * lg + 40.94;
+			return -4.78 * lg * lg
+				+ 18.33 * lg - 40.94;
 		}());
 
 		this.gamma2 = (function getGamma2() {
 			var lg = log10(opts.f / 28);
 
-			return 2 * lg * lg
-				+ 5.4;
+			return -2 * lg * lg
+				- 5.4;
 		}());
 
 		//The coefficient that depends on terrain type
 		this.alphaUGamma = (function getAlphaHAs() {
 			return (1 - opts.uGamma)
-				* ((1 - 2 * opts.uGamma) * this.gamma1
-				+ 4 * opts.uGamma * this.gamma2);
+				* ((1 - 2 * opts.uGamma) * self.gamma1
+				+ 4 * opts.uGamma * self.gamma2);
 		}());
 
 		//The coefficient that depends on housing density.
@@ -98,32 +106,58 @@
 		//R0 - line-of-sight
 		//Use the coefficient when 0.2R0 < r < 0.8R0
 		//TODO: implement this condition
-		this.alphaHbsF = (function getAlphaHbsF(r) {
+		this.getAlphaHbs = function getAlphaHbsF(r) {
 			var hBsPlus20 = opts.hBs + 20,
 				rUp2 = r * r;
 
 			return (27 + opts.f / 230)
 				* log10((17 * hBsPlus20) / ((17 * hBsPlus20) + rUp2))
-				+ 1.3 - (opts.f - 55) / 750;
-		}());
+				+ 1.3 - Math.abs((opts.f - 55)) / 750;
+		};
 
-		//Returns wimax signal power depending on model options
+
+		//Returns wimax signal power loss depending on model options
 		//and r - distance between the base station and a
 		//consumer station
-		this.getSignal = function (r) {
+		this.getSignalLoss = function (r) {
 			return 69.55 + 26.16 * log10(opts.f)
 				- 13.82 * log10(opts.hBs)
-				+ (44.9 - 6.55 * log10(opts.hBs)) * log10(r)
-				+ this.alphaHAs
-				+ this.alphaUGamma
-				+ this.alphaB
-				+ this.alphaHbsF;
+				+ 44.9 - 6.55 * log10(opts.hBs) * log10(r)
+				+ self.alphaHAs
+				+ self.alphaUGamma
+				- self.getAlphaHbs(r)
+				+ self.alphaB;
 		};
+
+		//returns signal power at the r distance from
+		//the base station
+		this.getSignalPower = function (r) {
+			var signal = opts.p - self.getSignalLoss(r) - opts.s;
+
+			return signal;
+		}
+
+		this.getRadius = function (minimalSignal) {
+			var signal, r = 1;
+
+			signal = self.getSignalPower(r);
+
+			//self.q - minimal required signal
+			while (signal > self.q) {
+				r += 10;
+				signal = self.getSignalLoss(r);
+			}
+
+			return r;
+		}
 	}
 
 	(function exports() {
-		window.WM = window.WM || {
+		global.WM = global.WM || {
 			HataModel: HataModel
 		};
 	}());
-}(window, jQuery));
+
+}((function () {
+		return this;
+	}())));

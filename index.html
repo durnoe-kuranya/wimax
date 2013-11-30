@@ -1,11 +1,180 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>WiMax coverage calculator</title>
-    <link rel="stylesheet" href="styles/index.css" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>WiMax coverage calculator</title>
+	<script type="text/javascript" src="scripts/jquery-2.0.3.min.js"></script>
+	<script type="text/javascript" src="scripts/jquery.flot.js"></script>
+	<script type="text/javascript" src="scripts/hataModel.js"></script>
+	<link rel="stylesheet" href="styles/bootstrap.min.css"/>
+
+	<style>
+		.plot {
+			width: 90%;
+			margin: 30px auto;
+			height: 400px;
+		}
+
+		.plot-wrapper {
+			display: none;
+		}
+
+		.options {
+			width: 90%;
+			margin: 0 auto;
+		}
+	</style>
+
+	<script>
+		function getOptions() {
+			var options = {
+				hBs: parseFloat($('#hBs').val()),
+				hAs: parseFloat($('#hAs').val()),
+				f: parseFloat($('#f').val()),
+				U: parseFloat($('#terrain-type').val()),
+				uGamma: parseFloat($('#house-density').val()),
+				b: parseFloat($('#house-density').val()),
+				p: parseFloat($('#base-power').val()),
+				s: parseFloat($('#margin-fade').val()),
+				q: parseFloat($('#required-signal').val())
+			};
+
+//TODO: remove it. this is just a stab implementation
+			options = {};
+
+			return options;
+		}
+	</script>
+
+	<script>
+
+		$(function () {
+			$('#plot-button').click(function (event) {
+				var options = getOptions();
+
+				var hm = new WM.HataModel(options);
+
+				(function plot() {
+					var r = 1;
+					var i = 0;
+					var fadingPlotPoints = [];
+					var signalPlotPoints = [];
+
+					for (i = 0; i < 100; i += 1) {
+						var fading = hm.getSignalLoss(r);
+						var signal = hm.getSignalPower(r)
+
+						fadingPlotPoints.push([r, fading]);
+						signalPlotPoints.push([r, signal]);
+
+						r += 100;
+					}
+
+					$('.plot-wrapper').show();
+
+					$.plot("#fading-plot", [fadingPlotPoints], { colors: ["red"]});
+					$.plot("#signal-plot", [signalPlotPoints], { colors: ["blue"]});
+				}());
+
+				event.preventDefault();
+			});
+		});
+	</script>
+
 </head>
 <body>
+<h2>Параметры</h2>
+
+<form class="form-horizontal options" role="form">
+	<div class="form-group">
+		<label for="hBs" class="col-sm-2 control-label">Высота принимающей станции</label>
+
+		<div class="col-sm-10">
+			<input type="text" class="form-control" id="hBs" placeholder="Высота принимающей станции" value="32"/>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label for="hAs" class="col-sm-2 control-label">Высота принимающей станции</label>
+
+		<div class="col-sm-10">
+			<input type="text" class="form-control" id="hAs" placeholder="Высота принимающей станции" value="1.7"/>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label for="f" class="col-sm-2 control-label">Частота</label>
+
+		<div class="col-sm-10">
+			<input type="text" class="form-control" id="f" placeholder="Частота" value="2500"/>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label for="terrain-type" class="col-sm-2 control-label">Тип местности</label>
+
+		<div class="col-sm-10">
+			<select class="form-control" id="terrain-type">
+				<option value="1">Большой город</option>
+				<option value="0.5">Малый город</option>
+				<option value="0">Деревня</option>
+			</select>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label for="house-density" class="col-sm-2 control-label">Процент застройки</label>
+
+		<div class="col-sm-10">
+			<input type="range" min="0" max="1" step="0.01" class="form-control" id="house-density"
+				   placeholder="Процент застройки" value="0.3"/>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label for="base-power" class="col-sm-2 control-label">Выходная мощность</label>
+
+		<div class="col-sm-10">
+			<input type="text" class="form-control" id="base-power" placeholder="Выходная мощность" value="32"/>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label for="margin-fade" class="col-sm-2 control-label">Запас по замираниям</label>
+
+		<div class="col-sm-10">
+			<input type="text" class="form-control" id="margin-fade" placeholder="Запас по замираниям" value="40"/>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label for="required-signal" class="col-sm-2 control-label">Требуемый уровень сигнала на входе приемника</label>
+
+		<div class="col-sm-10">
+			<input type="text" class="form-control" id="required-signal"
+				   placeholder="Требуемый уровень сигнала на входе приемника" value="-103"/>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<div class="col-sm-offset-2 col-sm-10">
+			<button type="submit" id="plot-button" class="btn btn-default">Sign in</button>
+		</div>
+	</div>
+
+</form>
+
+<div class="plot-wrapper">
+	<h2>Затухание сигнала</h2>
+
+	<div class="plot" id="fading-plot"></div>
+</div>
+
+<div class="plot-wrapper">
+	<h2>Мощность сигнала</h2>
+
+	<div class="plot" id="signal-plot"></div>
+</div>
 
 </body>
 </html>

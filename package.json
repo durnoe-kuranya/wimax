@@ -23,6 +23,8 @@
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-jslint": "~1.1.1",
-    "grunt-contrib-watch": "~0.5.3"
+    "grunt-contrib-watch": "~0.5.3",
+    "jasmine-node": "~1.11.0",
+    "jQuery": "~1.7.4"
   }
 }
