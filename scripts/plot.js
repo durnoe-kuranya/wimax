@@ -45,10 +45,23 @@
 				$('.plot-wrapper').show();
 
 				$.plot("#signal-plot", [
-					{label: "Мощность сигнала", color: "black", data: requiredSignal },
-					{label: "Пороговый сигнал", color: "blue", data: signalPlotPoints }
+					{label: "Пороговый сигнал", color: "black", data: requiredSignal },
+					{label: "Мощность сигнала", color: "blue", data: signalPlotPoints }
 				]);
 			}());
+
+			(function outputRadius() {
+				var radius, $radiusHeading, $radiusSpan;
+
+				radius = hm.getRadius();
+
+				$radiusHeading = $('.radius-heading');
+				$radiusSpan = $radiusHeading.find('.radius-span');
+
+				$radiusHeading.removeClass('hidden');
+				$radiusSpan.text(radius);
+			}());
+
 
 			event.preventDefault();
 		});
