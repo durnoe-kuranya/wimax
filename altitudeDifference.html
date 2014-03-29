@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Зависимость сигнала от рельефа</title>
+
+	<link rel="stylesheet" href="lib/css/bootstrap.min.css"/>
+</head>
+<body>
+
+<div class="container">
+
+	<h1>Высота принимающей станции зависит от рельефа</h1>
+
+	<table id="signal-table" class="table table-striped">
+		<tbody>
+			<tr>
+				<th>Высота принимающей станции</th>
+				<th>Радиус зоны покрытия</th>
+			</tr>
+		</tbody>
+	</table>
+
+</div>
+
+<script src="lib/handlebars-v1.3.0.js"></script>
+<script src="scripts/templates.js"></script>
+
+<script src="scripts/hataModel.js"></script>
+<script src="scripts/altitudeDifferenceTest.js"></script>
+
+</body>
+</html>

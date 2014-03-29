@@ -157,9 +157,9 @@
 	}
 
 	(function exports() {
-		global.WM = global.WM || {
-			HataModel: HataModel
-		};
+		global.WM = global.WM || {};
+
+		WM.HataModel  = HataModel;
 	}());
 
 }(this));
